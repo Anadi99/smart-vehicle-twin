@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.pyc
+.env
+env/
+venv/
+*.log
+
+# Data
+data/
+*.csv
+
+# Streamlit
+.streamlit/
+
+# OS
+.DS_Store
