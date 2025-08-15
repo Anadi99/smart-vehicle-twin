@@ -1,0 +1,6 @@
+{
+  "model": "BMW i4",
+  "battery_capacity_kWh": 80,
+  "brake_wear_threshold": 0.3,
+  "temp_max_C": 90
+}
