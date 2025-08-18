@@ -1,3 +1,5 @@
+data/latest.csv
+data/history.csv
 # Python
 __pycache__/
 *.pyc
