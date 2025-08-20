@@ -176,7 +176,7 @@ st.caption("Tip: run the simulator continuously in another terminal and re-run s
 
 # ---------- Optional: Run inference from dashboard (button) ----------
 import subprocess
-if st.button("Run ML inference now"):
+if st.button("Run ML inference now", key="inference_btn1"):
     st.info("Running inference (scripts/predict_latest.py)...")
     try:
         subprocess.run(["python", "scripts/predict_latest.py"], check=True)
@@ -186,10 +186,54 @@ if st.button("Run ML inference now"):
 
 # ---------- Optional: Run inference from dashboard (button) ----------
 import subprocess
-if st.button("Run ML inference now"):
+if st.button("Run ML inference now", key="inference_btn2"):
     st.info("Running inference (scripts/predict_latest.py)...")
     try:
         subprocess.run(["python", "scripts/predict_latest.py"], check=True)
         st.success("Inference completed — predictions.json updated.")
     except Exception as e:
         st.error(f"Inference failed: {e}")
+
+# --- Auto-run inference helper (safe) ---
+import subprocess, threading, time
+
+AUTO_FLAG = "data/_auto_infer.flag"
+
+def start_auto_infer(interval_sec=30):
+    """Background thread that runs scripts/predict_latest.py every interval_sec while flag exists."""
+    def runner():
+        while os.path.exists(AUTO_FLAG):
+            try:
+                subprocess.run(["python", "scripts/predict_latest.py"], check=False)
+            except Exception:
+                pass
+            # avoid tight loop
+            time.sleep(interval_sec)
+    t = threading.Thread(target=runner, daemon=True)
+    t.start()
+
+# UI controls
+st.subheader("ML inference controls")
+colA, colB = st.columns([1,1])
+if colA.button("Run ML inference now", key="inference_btn3"):
+    st.info("Running inference...")
+    try:
+        subprocess.run(["python", "scripts/predict_latest.py"], check=True)
+        st.success("Inference completed — predictions.json updated.")
+    except Exception as e:
+        st.error(f"Inference failed: {e}")
+
+if colB.button("Start auto-inference (30s)"):
+    # create the flag file and start the background thread
+    open(AUTO_FLAG, "w").close()
+    start_auto_infer(interval_sec=30)
+    st.success("Auto-inference started (every 30s).")
+
+if st.button("Stop auto-inference"):
+    try:
+        if os.path.exists(AUTO_FLAG):
+            os.remove(AUTO_FLAG)
+        st.info("Auto-inference stopped.")
+    except Exception as e:
+        st.error(f"Error stopping auto-inference: {e}")
+
