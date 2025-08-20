@@ -183,13 +183,3 @@ if st.button("Run ML inference now"):
         st.success("Inference completed — predictions.json updated.")
     except Exception as e:
         st.error(f"Inference failed: {e}")
-
-# ---------- Optional: Run inference from dashboard (button) ----------
-import subprocess
-if st.button("Run ML inference now"):
-    st.info("Running inference (scripts/predict_latest.py)...")
-    try:
-        subprocess.run(["python", "scripts/predict_latest.py"], check=True)
-        st.success("Inference completed — predictions.json updated.")
-    except Exception as e:
-        st.error(f"Inference failed: {e}")
