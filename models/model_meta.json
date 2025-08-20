@@ -1,0 +1,15 @@
+{
+  "feature_cols": [
+    "speed_mean",
+    "speed_max",
+    "temp_mean",
+    "temp_max",
+    "duration_sec"
+  ],
+  "rul_best_model": "xgb",
+  "mae": {
+    "brake_wear": 0.07010826567919717,
+    "soc_drop": 0.00506833333333363,
+    "rul": 3.264604091644287
+  }
+}
