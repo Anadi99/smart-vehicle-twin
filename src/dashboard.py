@@ -237,3 +237,20 @@ if st.button("Stop auto-inference"):
     except Exception as e:
         st.error(f"Error stopping auto-inference: {e}")
 
+
+# Run SHAP explanations
+if st.button("Explain last prediction (SHAP)"):
+    import subprocess
+    try:
+        subprocess.run(["python","scripts/explain_pred.py"], check=True)
+        st.success("Explanation computed.")
+    except Exception as e:
+        st.error(f"Explanation failed: {e}")
+
+if os.path.exists("data/explanations.json"):
+    try:
+        exp = json.load(open("data/explanations.json"))
+        st.subheader("SHAP / Explanations")
+        st.json(exp)
+    except Exception:
+        pass
