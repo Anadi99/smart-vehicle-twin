@@ -254,3 +254,78 @@ if os.path.exists("data/explanations.json"):
         st.json(exp)
     except Exception:
         pass
+
+# ==========================
+# Actions & Integrations (Explainability • MQTT • ONNX • 3D)
+# ==========================
+import subprocess, os, json, pandas as _pd, pathlib as _pl
+st.divider()
+st.subheader("🧩 Actions & Integrations")
+
+a_col1, a_col2, a_col3 = st.columns(3)
+
+with a_col1:
+    if st.button("Compute SHAP / Importance", key="btn_explain_now"):
+        st.info("Running explainability…")
+        try:
+            subprocess.run(["python", "scripts/explain_rul.py"], check=True)
+            st.success("explanations.json updated.")
+        except Exception as e:
+            st.error(f"Explainability failed: {e}")
+
+with a_col2:
+    mqtt_host = st.text_input("MQTT host", key="mqtt_host", value=os.getenv("MQTT_HOST","broker.hivemq.com"))
+    topic_hint = st.text_input("MQTT topic", key="mqtt_topic", value=os.getenv("MQTT_TOPIC", f"uvtwin/telemetry/{os.getenv('USERNAME','user')}"))
+    if st.button("Publish last tick → MQTT", key="btn_mqtt_pub"):
+        st.info(f"Publishing to {mqtt_host} …")
+        env = dict(os.environ)
+        env["MQTT_HOST"] = mqtt_host
+        env["MQTT_TOPIC"] = topic_hint
+        try:
+            subprocess.run(["python", "scripts/publish_mqtt.py"], check=True, env=env)
+            st.success("Published.")
+        except Exception as e:
+            st.error(f"MQTT publish failed: {e}")
+
+with a_col3:
+    if st.button("Export model to ONNX", key="btn_onnx_export"):
+        try:
+            subprocess.run(["python", "scripts/convert_to_onnx.py"], check=True)
+            st.success("Saved models/rul_best.onnx")
+        except Exception as e:
+            st.error(f"ONNX export failed: {e}")
+    if st.button("Test ONNX vs SKLearn", key="btn_onnx_test"):
+        try:
+            subprocess.run(["python", "scripts/test_onnx.py"], check=True)
+            st.success("ONNX test done (see Streamlit console).")
+        except Exception as e:
+            st.error(f"ONNX test failed: {e}")
+
+# Explainability panel
+expander = st.expander("🧠 Model Explainability (last lap)", expanded=False)
+with expander:
+    exp_path = _pl.Path("data/explanations.json")
+    if exp_path.exists():
+        try:
+            data = json.loads(exp_path.read_text())
+            dfc = _pd.DataFrame(data.get("contribs", []))
+            if not dfc.empty:
+                st.dataframe(dfc, use_container_width=True)
+                st.bar_chart(dfc.set_index("feature")[["contribution"]])
+            else:
+                st.info("No contribution values found (fallback method).")
+        except Exception as _e:
+            st.warning(f"Could not read explanations.json: {_e}")
+    else:
+        st.info("No explanations.json yet. Click 'Compute SHAP / Importance' above.")
+
+# 3D Twin
+st.subheader("🧭 3D Digital Twin (preview)")
+try:
+    from streamlit.components.v1 import html
+    if _pl.Path("ui/three/index.html").exists():
+        st.components.v1.html(_pl.Path("ui/three/index.html").read_text(encoding="utf-8"), height=420, scrolling=False)
+    else:
+        st.info("ui/three/index.html not found.")
+except Exception as _e:
+    st.info(f"3D viewer not available: {_e}")
