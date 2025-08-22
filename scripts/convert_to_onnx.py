@@ -1,19 +1,30 @@
-#!/usr/bin/env python3
-import os, json, joblib, numpy as np
+from pathlib import Path
+import joblib
+import xgboost as xgb
 from skl2onnx import convert_sklearn
 from skl2onnx.common.data_types import FloatTensorType
-from pathlib import Path
+import onnxmltools
 
-MODEL="models/rul_best.pkl"
-META ="models/model_meta.json"
-OUT  ="models/rul_best.onnx"
+# Paths
+model_path = Path("models/rul_best.pkl")
+onnx_path = Path("models/rul_best.onnx")
 
-assert Path(MODEL).exists() and Path(META).exists(), "Train models first."
-meta=json.load(open(META))
-feat_cols=meta["feature_cols"]
-n=len(feat_cols)
+# Load model
+model = joblib.load(model_path)
 
-model=joblib.load(MODEL)
-onnx_model = convert_sklearn(model, initial_types=[("input", FloatTensorType([None, n]))])
-Path(OUT).write_bytes(onnx_model.SerializeToString())
-print("Saved", OUT)
+# Convert based on type
+if isinstance(model, xgb.XGBRegressor):
+    print("🔄 Converting XGBoost model to ONNX...")
+    initial_type = [("input", FloatTensorType([None, model.n_features_in_]))]
+    onnx_model = onnxmltools.convert_xgboost(model, initial_types=initial_type)
+else:
+    print("🔄 Converting sklearn model to ONNX...")
+    initial_type = [("input", FloatTensorType([None, model.n_features_in_]))]
+    onnx_model = convert_sklearn(model, initial_types=initial_type)
+
+# Save
+with open(onnx_path, "wb") as f:
+    f.write(onnx_model.SerializeToString())
+
+print(f"✅ Exported ONNX model saved at: {onnx_path}")
+

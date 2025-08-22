@@ -329,3 +329,39 @@ try:
         st.info("ui/three/index.html not found.")
 except Exception as _e:
     st.info(f"3D viewer not available: {_e}")
+
+# ===== Explainability (SHAP) =====
+st.subheader("🧠 Explainability (SHAP)")
+import subprocess, json
+colX, colY = st.columns(2)
+with colX:
+    if st.button("Explain last lap (RUL)", key="btn_explain_rul"):
+        try:
+            st.info("Running explain_rul.py…")
+            subprocess.run(["python", "scripts/explain_rul.py"], check=True)
+            st.success("Explanation generated.")
+        except Exception as e:
+            st.error(f"Explain failed: {e}")
+
+# try to show explanation if present (common output paths)
+paths_try = [
+    "data/shap_rul_last.json",
+    "models/shap_rul_last.json",
+    "models/shap_last.json",
+    "data/shap_last.json"
+]
+shown=False
+for p in paths_try:
+    if os.path.exists(p):
+        try:
+            exp = json.load(open(p))
+            top = exp.get("top_features") or exp.get("features") or []
+            if top:
+                st.write("Top contributing features (RUL):")
+                st.json(top)
+                shown=True
+                break
+        except Exception:
+            pass
+if not shown:
+    st.caption("Run the button above to generate SHAP, or no SHAP file found yet.")

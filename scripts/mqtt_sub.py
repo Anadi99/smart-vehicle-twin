@@ -1,24 +1,36 @@
 #!/usr/bin/env python3
-import os, json
 import paho.mqtt.client as mqtt
+import json, os
 
-HOST = os.getenv("MQTT_HOST", "broker.hivemq.com")
-PORT = int(os.getenv("MQTT_PORT", "1883"))
-TOPIC = os.getenv("MQTT_TOPIC", f"uvtwin/telemetry/{os.getenv('USERNAME','user')}")
+HOST="broker.hivemq.com"
+PORT=1883
+TOPIC=f"uvtwin/telemetry/{os.getenv('USER') or os.getenv('USERNAME') or 'anon'}"
+DATA_FILE="data/telemetry.jsonl"
 
-def on_connect(client, userdata, flags, reason_code, properties=None):
-    print("Connected:", reason_code)
-    client.subscribe(TOPIC)
+os.makedirs("data", exist_ok=True)
+
+def on_connect(client, userdata, flags, rc):
+    if rc == 0:
+        print(f"Connected: Success (subscribed to {TOPIC})")
+        client.subscribe(TOPIC)
+    else:
+        print("Connection failed with code", rc)
 
 def on_message(client, userdata, msg):
     try:
-        print("MSG:", json.loads(msg.payload.decode()))
-    except Exception:
-        print("RAW:", msg.payload)
+        payload = msg.payload.decode()
+        j = json.loads(payload)
+        print("MSG:", j)
 
-c = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
-c.on_connect = on_connect
-c.on_message = on_message
+        # Save to file
+        with open(DATA_FILE, "a") as f:
+            f.write(json.dumps(j) + "\n")
+
+    except Exception as e:
+        print("RAW:", msg.payload, "ERR:", e)
+
+c = mqtt.Client()
+c.on_connect=on_connect
+c.on_message=on_message
 c.connect(HOST, PORT, 60)
-print(f"Subscribing to mqtt://{HOST}:{PORT}/{TOPIC}")
 c.loop_forever()
