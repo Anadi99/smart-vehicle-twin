@@ -3,14 +3,14 @@
   "model": "i4",
   "ambient_C": 30,
   "temp_max_C": 95,
-  "brake_wear_threshold": 0.2,
+  "brake_wear_threshold": 0.20,
   "soc_min_pct": 15,
   "lap_length_m": 5100,
   "tick_sec": 1,
   "mqtt": {
-    "enabled": true,
-    "host": "localhost",
+    "enabled": false,
+    "host": "test.mosquitto.org",
     "port": 1883,
-    "topic": "uvtwin/telemetry"
+    "topic": "uvtwin/dev/bmw_i4"
   }
 }
