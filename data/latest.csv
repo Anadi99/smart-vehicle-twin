@@ -1,2 +1,2 @@
-ts,lap,tick,speed_kph,accel_mps2,distance_m,lat,lon,battery_soc,brake_pad_frac,brake_temp_c,tire_wear_frac,risk,reasons
-2025-08-20T11:47:07.695313,3,222,188.5,1.19,10473.2,50.338821,6.949804,0.0,0.96,35.3,0.05,0.375,low SOC 0.0%
+ts,lap,speed_kph,rpm,accel_mps2,distance_m,brake_temp_c,battery_soc,brake_pad_frac,tire_wear_frac,risk,reasons,lat,lon
+2025-08-22T18:01:02.724687,1,59.7,1980.3,1.386,2970.04,301.32,19.57,0.9767,0.9544,1.0,nominal,37.422048,-122.083958
