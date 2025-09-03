@@ -1,16 +1,13 @@
 {
-  "brand": "BMW",
-  "model": "i4",
-  "ambient_C": 30,
-  "temp_max_C": 95,
-  "brake_wear_threshold": 0.20,
-  "soc_min_pct": 15,
-  "lap_length_m": 5100,
-  "tick_sec": 1,
+  "model": "BMW i4",
+  "max_speed": 250,
+  "battery_capacity": 80,
+  "brake_max_temp": 1200,
+  "tire_wear_rate": 0.01,
   "mqtt": {
-    "enabled": false,
-    "host": "test.mosquitto.org",
+    "enabled": true,
+    "host": "localhost",
     "port": 1883,
-    "topic": "uvtwin/dev/bmw_i4"
+    "topic": "uvtwin/telemetry/Anadi"
   }
 }
