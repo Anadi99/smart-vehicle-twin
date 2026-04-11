@@ -99,6 +99,27 @@ export function AppShell({ children, onLogout }: { children: ReactNode; onLogout
 
         {/* Page content */}
         <main className="flex-1 overflow-auto p-6 lg:p-8">{children}</main>
+
+        {/* ── Footer ────────────────────────────────────────────────── */}
+        <footer className="border-t border-slate-800/40 bg-slate-950/60 px-6 py-3">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-xs text-slate-600">
+              © {new Date().getFullYear()} Smart Vehicle Twin. All rights reserved.
+            </p>
+            <p className="text-xs text-slate-600">
+              Developed by{' '}
+              <a
+                href="https://github.com/Anadi99"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-cyan-500 transition-colors hover:text-cyan-400"
+              >
+                Anadi99
+              </a>
+              {' '}· Cloud AI Developer
+            </p>
+          </div>
+        </footer>
       </div>
     </div>
   )

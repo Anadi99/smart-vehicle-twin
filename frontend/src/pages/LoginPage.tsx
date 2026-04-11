@@ -126,6 +126,20 @@ export default function LoginPage({ onLogin }: { onLogin: () => void }) {
             </span>
           ))}
         </div>
+
+        {/* Copyright */}
+        <p className="mt-6 text-center text-xs text-slate-700">
+          © {new Date().getFullYear()} Developed by{' '}
+          <a
+            href="https://github.com/Anadi99"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-cyan-600 transition-colors hover:text-cyan-500"
+          >
+            Anadi99
+          </a>
+          {' '}· Cloud AI Developer
+        </p>
       </div>
     </div>
   )
