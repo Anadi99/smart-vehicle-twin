@@ -12,7 +12,8 @@
 
 > A production-grade, cloud-native **AI-powered Digital Twin** for a BMW i4 race car.
 > Real-time telemetry, ML predictions, anomaly detection, SHAP explainability, and a live 3D visualization — all running on AWS and deployable in one command.
- https://svtai.netlify.app/
+ 
+https://svtai.netlify.app/
 ---
 
 ## What is this project?
