@@ -1,21 +1,37 @@
 name: Deploy to AWS
 
+# Triggered manually from GitHub Actions tab, or automatically on main push
+# when AWS secrets are configured.
+# To deploy: go to Actions → "Deploy to AWS" → Run workflow
 on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'production'
+        type: choice
+        options: [production, staging]
+
   push:
     branches: [main]
+    # Only runs automatically when the required secret is present
+    # (GitHub skips the job if the secret is empty — see job-level `if` below)
 
 env:
-  AWS_REGION:    ${{ secrets.AWS_REGION }}
-  ECR_REPO:      ${{ secrets.ECR_REPO }}
-  ECS_CLUSTER:   ${{ secrets.ECS_CLUSTER }}
-  ECS_SERVICE:   ${{ secrets.ECS_SERVICE }}
-  S3_BUCKET:     ${{ secrets.S3_BUCKET }}
-  CF_DIST_ID:    ${{ secrets.CF_DIST_ID }}
+  AWS_REGION:  ${{ secrets.AWS_REGION }}
+  ECR_REPO:    ${{ secrets.ECR_REPO }}
+  ECS_CLUSTER: ${{ secrets.ECS_CLUSTER }}
+  ECS_SERVICE: ${{ secrets.ECS_SERVICE }}
+  S3_BUCKET:   ${{ secrets.S3_BUCKET }}
+  CF_DIST_ID:  ${{ secrets.CF_DIST_ID }}
 
 jobs:
   deploy-backend:
     name: Build & push backend → ECS
     runs-on: ubuntu-latest
+    # Skip entirely when AWS secrets are not configured
+    if: ${{ secrets.AWS_REGION != '' && secrets.AWS_ACCESS_KEY_ID != '' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -58,6 +74,7 @@ jobs:
     name: Build & deploy frontend → S3 + CloudFront
     runs-on: ubuntu-latest
     needs: deploy-backend
+    if: ${{ secrets.AWS_REGION != '' && secrets.AWS_ACCESS_KEY_ID != '' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -70,7 +87,7 @@ jobs:
       - name: Install & build
         working-directory: frontend
         env:
-          VITE_API_BASE: ""   # nginx proxy handles /api in production
+          VITE_API_BASE: ""
         run: |
           npm ci
           npm run build
