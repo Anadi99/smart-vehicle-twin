@@ -1,0 +1,26 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      INGESTION_MODE: sim
+      MODELS_DIR: /models
+      CORS_ORIGINS: "http://localhost:5173,http://localhost:80"
+    volumes:
+      # Mount the repo-root models/ dir so trained artifacts are available
+      - ../../models:/models:ro
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      backend:
+        condition: service_healthy

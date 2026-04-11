@@ -1,0 +1,38 @@
+[project]
+name = "smart-vehicle-twin-backend"
+version = "0.3.0"
+description = "Backend API for Smart Vehicle Twin"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "pydantic>=2",
+    "joblib",
+    "numpy",
+    "scikit-learn",
+    "paho-mqtt",
+    "python-jose[cryptography]",
+    "passlib[bcrypt]",
+    "python-multipart",
+    "prometheus-fastapi-instrumentator",
+    "onnxruntime",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "httpx",
+    "pytest-asyncio",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["app*"]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"

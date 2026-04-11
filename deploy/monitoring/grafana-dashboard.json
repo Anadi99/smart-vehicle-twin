@@ -1,0 +1,42 @@
+{
+  "__inputs": [{ "name": "DS_PROMETHEUS", "label": "Prometheus", "type": "datasource", "pluginId": "prometheus" }],
+  "title": "Smart Vehicle Twin",
+  "uid": "svt-main",
+  "schemaVersion": 38,
+  "panels": [
+    {
+      "id": 1, "type": "stat", "title": "Request Rate (req/s)",
+      "gridPos": { "x": 0, "y": 0, "w": 6, "h": 4 },
+      "targets": [{ "expr": "rate(http_requests_total{job=\"svt-backend\"}[1m])", "legendFormat": "req/s" }]
+    },
+    {
+      "id": 2, "type": "stat", "title": "P95 Latency (ms)",
+      "gridPos": { "x": 6, "y": 0, "w": 6, "h": 4 },
+      "targets": [{ "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job=\"svt-backend\"}[5m])) * 1000", "legendFormat": "p95 ms" }]
+    },
+    {
+      "id": 3, "type": "stat", "title": "Active WS Connections",
+      "gridPos": { "x": 12, "y": 0, "w": 6, "h": 4 },
+      "targets": [{ "expr": "svt_ws_connections_active", "legendFormat": "connections" }]
+    },
+    {
+      "id": 4, "type": "stat", "title": "Error Rate (%)",
+      "gridPos": { "x": 18, "y": 0, "w": 6, "h": 4 },
+      "targets": [{ "expr": "rate(http_requests_total{status=~\"5..\",job=\"svt-backend\"}[5m]) / rate(http_requests_total{job=\"svt-backend\"}[5m]) * 100", "legendFormat": "error %" }]
+    },
+    {
+      "id": 5, "type": "timeseries", "title": "Request Rate by Endpoint",
+      "gridPos": { "x": 0, "y": 4, "w": 12, "h": 8 },
+      "targets": [{ "expr": "rate(http_requests_total{job=\"svt-backend\"}[1m])", "legendFormat": "{{handler}}" }]
+    },
+    {
+      "id": 6, "type": "timeseries", "title": "Latency Percentiles",
+      "gridPos": { "x": 12, "y": 4, "w": 12, "h": 8 },
+      "targets": [
+        { "expr": "histogram_quantile(0.50, rate(http_request_duration_seconds_bucket{job=\"svt-backend\"}[5m]))", "legendFormat": "p50" },
+        { "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job=\"svt-backend\"}[5m]))", "legendFormat": "p95" },
+        { "expr": "histogram_quantile(0.99, rate(http_request_duration_seconds_bucket{job=\"svt-backend\"}[5m]))", "legendFormat": "p99" }
+      ]
+    }
+  ]
+}

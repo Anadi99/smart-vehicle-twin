@@ -1,0 +1,82 @@
+@import 'tailwindcss';
+
+/* ── Design tokens ─────────────────────────────────────────────────────── */
+:root {
+  --color-brand:   #22d3ee;   /* cyan-400  */
+  --color-danger:  #f87171;   /* rose-400  */
+  --color-warn:    #fbbf24;   /* amber-400 */
+  --color-ok:      #34d399;   /* emerald-400 */
+  --color-surface: #0f172a;   /* slate-900  */
+  --color-border:  #1e293b;   /* slate-800  */
+}
+
+/* ── Base ───────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { font-size: 15px; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #020617;        /* slate-950 */
+  color: #e2e8f0;             /* slate-200 */
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root { min-height: 100vh; }
+
+/* ── Custom scrollbar ───────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+/* ── Glow utilities ─────────────────────────────────────────────────────── */
+.glow-cyan  { box-shadow: 0 0 20px 0 rgba(34,211,238,.15); }
+.glow-rose  { box-shadow: 0 0 20px 0 rgba(248,113,113,.15); }
+.glow-green { box-shadow: 0 0 20px 0 rgba(52,211,153,.15);  }
+
+/* ── Gradient text ──────────────────────────────────────────────────────── */
+.gradient-text {
+  background: linear-gradient(135deg, #22d3ee 0%, #818cf8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Animated pulse ring (live indicator) ───────────────────────────────── */
+@keyframes ping-slow {
+  0%   { transform: scale(1);   opacity: .8; }
+  70%  { transform: scale(1.6); opacity: 0;  }
+  100% { transform: scale(1.6); opacity: 0;  }
+}
+.ping-slow { animation: ping-slow 2s cubic-bezier(0,0,.2,1) infinite; }
+
+/* ── Scan-line overlay (subtle CRT feel on cards) ───────────────────────── */
+.scanlines::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,.04) 2px,
+    rgba(0,0,0,.04) 4px
+  );
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* ── Number ticker transition ───────────────────────────────────────────── */
+.ticker { transition: color .3s ease; }
+
+/* ── Card hover lift ────────────────────────────────────────────────────── */
+.card-hover {
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,.4);
+}

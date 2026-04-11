@@ -1,0 +1,37 @@
+# Python
+backend/.pytest_cache/
+backend/*.egg-info/
+backend/**/__pycache__/
+backend/**/*.pyc
+backend/.mypy_cache/
+*.pyc
+__pycache__/
+.env
+.env.*
+!.env.example
+
+# Node
+frontend/node_modules/
+frontend/dist/
+node_modules/
+
+# Terraform
+deploy/terraform/.terraform/
+deploy/terraform/.terraform.lock.hcl
+deploy/terraform/terraform.tfstate
+deploy/terraform/terraform.tfstate.backup
+deploy/terraform/*.tfvars
+!deploy/terraform/variables.tf
+
+# Playwright
+test-results/
+playwright-report/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp

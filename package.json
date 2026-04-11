@@ -1,0 +1,10 @@
+{
+  "name": "smart-vehicle-twin-fullstack",
+  "private": true,
+  "scripts": {
+    "e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0"
+  }
+}
