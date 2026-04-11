@@ -4,15 +4,18 @@ const BASE_DELAY_MS = 1_000
 const MAX_DELAY_MS = 30_000
 const MAX_RETRIES = 10
 
+/**
+ * Build the WebSocket URL.
+ * - If VITE_WS_BASE is set (e.g. wss://my-backend.railway.app) use that.
+ * - Otherwise derive from window.location (same-origin — works with nginx proxy).
+ */
 function wsUrl(path: string): string {
+  const base = (import.meta.env.VITE_WS_BASE as string | undefined)?.replace(/\/$/, '')
+  if (base) return `${base}${path}`
   const proto = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
   return `${proto}//${window.location.host}${path}`
 }
 
-/**
- * WebSocket client with exponential-backoff auto-reconnect.
- * Returns a cancel function — call it to permanently close the connection.
- */
 export function connectTelemetryWs(
   onMessage: (data: unknown) => void,
   onStatus?: (s: WsStatus) => void,
@@ -35,24 +38,14 @@ export function connectTelemetryWs(
     socket.onmessage = (ev) => {
       try {
         onMessage(JSON.parse(ev.data as string) as unknown)
-      } catch {
-        /* ignore malformed frames */
-      }
+      } catch { /* ignore malformed */ }
     }
 
-    socket.onerror = () => {
-      onStatus?.('error')
-    }
+    socket.onerror = () => onStatus?.('error')
 
     socket.onclose = () => {
-      if (cancelled) {
-        onStatus?.('closed')
-        return
-      }
-      if (retries >= MAX_RETRIES) {
-        onStatus?.('closed')
-        return
-      }
+      if (cancelled) { onStatus?.('closed'); return }
+      if (retries >= MAX_RETRIES) { onStatus?.('closed'); return }
       const delay = Math.min(BASE_DELAY_MS * 2 ** retries, MAX_DELAY_MS)
       retries++
       onStatus?.('reconnecting')
@@ -61,7 +54,6 @@ export function connectTelemetryWs(
   }
 
   connect()
-
   return () => {
     cancelled = true
     if (retryTimer) clearTimeout(retryTimer)
