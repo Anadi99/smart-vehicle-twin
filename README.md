@@ -24,9 +24,9 @@ This project demonstrates a complete, end-to-end Cloud AI system:
 
 - A **physics-based vehicle simulator** generates realistic telemetry (speed, brake temperature, battery SOC, tire wear, GPS position) at 1 Hz
 - A **FastAPI backend** ingests that data via MQTT or CSV, runs it through an ML pipeline, evaluates alert rules, and broadcasts updates to all connected clients over WebSocket
-- Three **trained ML models** (Random Forest / XGBoost) predict Remaining Useful Life in laps, battery SOC drop per lap, and brake wear per lap — with SHAP explainability
+- Three **trained ML models** (Random Forest / XGBoost) predict Remaining Useful Life in laps, battery SOC drop per lap, and brake wear per lap with SHAP explainability
 - An **Isolation Forest** model detects anomalous sensor patterns in real time
-- A **React dashboard** renders live KPI cards, multi-series charts, a 3D animated vehicle model, per-lap analytics, and ML prediction panels — all updating without page refresh
+- A **React dashboard** renders live KPI cards, multi-series charts, a 3D animated vehicle model, per-lap analytics, and ML prediction panels all updating without page refresh
 - The entire stack is **containerised with Docker**, deployed to **AWS ECS Fargate** behind an ALB, with the frontend on **S3 + CloudFront**, provisioned by **Terraform**, and automated by **GitHub Actions CI/CD**
 
 ---
