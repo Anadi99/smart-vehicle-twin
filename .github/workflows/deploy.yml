@@ -31,7 +31,7 @@ jobs:
     name: Build & push backend → ECS
     runs-on: ubuntu-latest
     # Skip entirely when AWS secrets are not configured
-    if: ${{ secrets.AWS_REGION != '' && secrets.AWS_ACCESS_KEY_ID != '' }}
+    if: ${{ vars.AWS_DEPLOY_ENABLED == 'true' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -74,7 +74,7 @@ jobs:
     name: Build & deploy frontend → S3 + CloudFront
     runs-on: ubuntu-latest
     needs: deploy-backend
-    if: ${{ secrets.AWS_REGION != '' && secrets.AWS_ACCESS_KEY_ID != '' }}
+    if: ${{ vars.AWS_DEPLOY_ENABLED == 'true' }}
     steps:
       - uses: actions/checkout@v4
 
