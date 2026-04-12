@@ -18,14 +18,6 @@ on:
     # Only runs automatically when the required secret is present
     # (GitHub skips the job if the secret is empty — see job-level `if` below)
 
-env:
-  AWS_REGION:  ${{ secrets.AWS_REGION }}
-  ECR_REPO:    ${{ secrets.ECR_REPO }}
-  ECS_CLUSTER: ${{ secrets.ECS_CLUSTER }}
-  ECS_SERVICE: ${{ secrets.ECS_SERVICE }}
-  S3_BUCKET:   ${{ secrets.S3_BUCKET }}
-  CF_DIST_ID:  ${{ secrets.CF_DIST_ID }}
-
 jobs:
   deploy-backend:
     name: Build & push backend → ECS
@@ -40,7 +32,7 @@ jobs:
         with:
           aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region:            ${{ env.AWS_REGION }}
+          aws-region:            ${{ secrets.AWS_REGION }}
 
       - name: Login to ECR
         id: login-ecr
@@ -48,7 +40,7 @@ jobs:
 
       - name: Build, tag & push image
         env:
-          IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPO }}:${{ github.sha }}
+          IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPO }}:${{ github.sha }}
         run: |
           docker build -t $IMAGE ./backend
           docker push $IMAGE
@@ -66,8 +58,8 @@ jobs:
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
-          service:         ${{ env.ECS_SERVICE }}
-          cluster:         ${{ env.ECS_CLUSTER }}
+          service:         ${{ secrets.ECS_SERVICE }}
+          cluster:         ${{ secrets.ECS_CLUSTER }}
           wait-for-service-stability: true
 
   deploy-frontend:
@@ -97,10 +89,10 @@ jobs:
         with:
           aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region:            ${{ env.AWS_REGION }}
+          aws-region:            ${{ secrets.AWS_REGION }}
 
       - name: Sync to S3
-        run: aws s3 sync frontend/dist s3://${{ env.S3_BUCKET }} --delete
+        run: aws s3 sync frontend/dist s3://${{ secrets.S3_BUCKET }} --delete
 
       - name: Invalidate CloudFront
-        run: aws cloudfront create-invalidation --distribution-id ${{ env.CF_DIST_ID }} --paths "/*"
+        run: aws cloudfront create-invalidation --distribution-id ${{ secrets.CF_DIST_ID }} --paths "/*"
